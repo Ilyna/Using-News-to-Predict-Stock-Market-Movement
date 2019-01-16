@@ -1,0 +1,32 @@
+# News Data
+news_train_df.head()
+print(f'{news_train_df.shape[0]} samples and {news_train_df.shape[1]} features in the training news dataset.')
+
+# Create Wordcloud
+text = ' '.join(news_train_df['headline'].str.lower().values[-1000000:])
+wordcloud = WordCloud(max_font_size=None, stopwords=stop, background_color='white',
+                      width=1200, height=1000).generate(text)
+plt.figure(figsize=(12, 8))
+plt.imshow(wordcloud)
+plt.title('Top words in headline')
+plt.axis("off")
+plt.show()
+
+# Limit Time Period
+(news_train_df['urgency'].value_counts() / 1000000).plot('bar');
+plt.xticks(rotation=30);
+plt.title('Urgency counts (mln)');
+
+# EDA
+news_train_df['sentence_word_count'] =  news_train_df['wordCount'] / news_train_df['sentenceCount']
+plt.boxplot(news_train_df['sentence_word_count'][news_train_df['sentence_word_count'] < 40]);
+news_train_df['provider'].value_counts().head(10)
+(news_train_df['headlineTag'].value_counts() / 1000)[:10].plot('barh');
+plt.title('headlineTag counts (thousands)');
+
+# Sentiment Count
+for i, j in zip([-1, 0, 1], ['negative', 'neutral', 'positive']):
+    df_sentiment = news_train_df.loc[news_train_df['sentimentClass'] == i, 'assetName']
+    print(f'Top mentioned companies for {j} sentiment are:')
+    print(df_sentiment.value_counts().head(5))
+    print('')
